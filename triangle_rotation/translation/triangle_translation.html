@@ -8,6 +8,7 @@ varying vec4 fColor;
 
 uniform float theta;
 uniform float scale;
+uniform float tx;
 
 void main()
 {
@@ -29,12 +30,21 @@ void main()
         0.0,  0.0,   0.0, 1.0
     );
 
+    mat4 t = mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        tx,  0.0, 0.0, 1.0
+    );
+
     fColor = vColor;
-    gl_Position = r * sc * vPosition;
+    gl_Position = t * vPosition;
 }
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+
 precision mediump float;
 varying vec4 fColor;
 
@@ -43,11 +53,10 @@ void main()
     gl_FragColor = fColor;
 }
 </script>
-
-<script type="text/javascript" src="/Common/webgl-utils.js"></script>
-<script type="text/javascript" src="/Common/initShaders.js"></script>
-<script type="text/javascript" src="/Common/MV.js"></script>
-<script type="text/javascript" src="triangle_rotation_scale.js"></script>
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="triangle_translation.js"></script>
 </head>
 
 <body>

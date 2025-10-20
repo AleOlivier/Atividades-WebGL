@@ -11,17 +11,8 @@ uniform float scale;
 
 void main()
 {
-    float angles = radians(theta);
-    float c = cos(angles);
-    float s = sin(angles);
-
-    mat4 r = mat4(
-        c, -s, 0.0, 0.0,
-        s,  c, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
-    );
-
+    vec4 v0 = vec4(-0.5, -0.5, 0.0, 0.0);
+    
     mat4 sc = mat4(
         scale, 0.0,   0.0, 0.0,
         0.0,  scale,  0.0, 0.0,
@@ -29,12 +20,25 @@ void main()
         0.0,  0.0,   0.0, 1.0
     );
 
+    float angles = radians(theta);
+    float c = cos(angles);
+    float s = sin(angles);
+    mat4 r = mat4(
+        c, -s, 0.0, 0.0,
+        s,  c, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+
     fColor = vColor;
-    gl_Position = r * sc * vPosition;
+
+    gl_Position = r * (vPosition - v0) + v0;
 }
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+
 precision mediump float;
 varying vec4 fColor;
 
@@ -43,11 +47,10 @@ void main()
     gl_FragColor = fColor;
 }
 </script>
-
-<script type="text/javascript" src="/Common/webgl-utils.js"></script>
-<script type="text/javascript" src="/Common/initShaders.js"></script>
-<script type="text/javascript" src="/Common/MV.js"></script>
-<script type="text/javascript" src="triangle_rotation_scale.js"></script>
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="triangle_rotation_vertice.js"></script>
 </head>
 
 <body>

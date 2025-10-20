@@ -1,8 +1,4 @@
 var gl;
-var theta = 0;
-var scale = 1.0;
-var growing = true;
-var thetaLoc, scaleLoc;
 
 window.onload = function init() {
     var canvas = document.getElementById("gl-canvas");
@@ -16,19 +12,16 @@ window.onload = function init() {
     ];
 
     var colors = [
-        vec4(1.0, 0.0, 0.0, 1.0),
-        vec4(0.0, 1.0, 0.0, 1.0),
-        vec4(0.0, 0.0, 1.0, 1.0)
+        vec4(1,0,0,1),
+        vec4(0,1,0,1),
+        vec4(0,0,1,1)
     ];
 
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
     var program = initShaders(gl, "vertex-shader", "fragment-shader");
-    if (!program) {
-        console.error("Erro: shaders não compilados corretamente!");
-        return;
-    }
+    if (!program) { console.error("Erro: shaders não compilados!"); return; }
     gl.useProgram(program);
 
     var vBuffer = gl.createBuffer();
@@ -45,30 +38,10 @@ window.onload = function init() {
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vColor);
 
-    thetaLoc = gl.getUniformLocation(program, "theta");
-    scaleLoc = gl.getUniformLocation(program, "scale");
-
     render();
 };
 
 function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    theta += 0.5;
-
-    var step = 0.005;
-    if (growing) {
-        scale += step;
-        if (scale >= 2.0) growing = false;
-    } else {
-        scale -= step;
-        if (scale <= 0.5) growing = true;
-    }
-
-    gl.uniform1f(thetaLoc, theta);
-    gl.uniform1f(scaleLoc, scale);
-
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-    requestAnimFrame(render);
 }

@@ -2,7 +2,10 @@ var gl;
 var theta = 0;
 var scale = 1.0;
 var growing = true;
-var thetaLoc, scaleLoc;
+var tx = 0.0;
+var movingRight = true;
+
+var thetaLoc, scaleLoc, txLoc;
 
 window.onload = function init() {
     var canvas = document.getElementById("gl-canvas");
@@ -47,6 +50,7 @@ window.onload = function init() {
 
     thetaLoc = gl.getUniformLocation(program, "theta");
     scaleLoc = gl.getUniformLocation(program, "scale");
+    txLoc    = gl.getUniformLocation(program, "tx");
 
     render();
 };
@@ -56,17 +60,27 @@ function render() {
 
     theta += 0.5;
 
-    var step = 0.005;
+    var stepScale = 0.005;
     if (growing) {
-        scale += step;
+        scale += stepScale;
         if (scale >= 2.0) growing = false;
     } else {
-        scale -= step;
+        scale -= stepScale;
         if (scale <= 0.5) growing = true;
+    }
+
+    var stepTx = 0.005;
+    if (movingRight) {
+        tx += stepTx;
+        if (tx >= 0.5) movingRight = false;
+    } else {
+        tx -= stepTx;
+        if (tx <= -0.5) movingRight = true;
     }
 
     gl.uniform1f(thetaLoc, theta);
     gl.uniform1f(scaleLoc, scale);
+    gl.uniform1f(txLoc, tx);
 
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script id="vertex-shader" type="x-shader/x-vertex">
+attribute vec4 vPosition;
+attribute vec4 vColor;
+varying vec4 fColor;
+
+void main()
+{
+    vec4 v0 = vec4(-0.5, -0.5, 0.0, 0.0);
+    vec4 v1 = vec4(0.0, 0.5, 0.0, 0.0);
+
+    vec2 A = v0.xy;
+    vec2 B = v1.xy;
+    vec2 P = vPosition.xy;
+    vec2 u = normalize(B - A);
+    vec2 proj = A + u * dot(P - A, u);
+    vec2 reflected = 2.0 * proj - P;
+
+    gl_Position = vec4(reflected.xy, vPosition.z, 1.0);
+
+    fColor = vColor;
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+varying vec4 fColor;
+
+void main()
+{
+    gl_FragColor = fColor;
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="triangle_espelhamento.js"></script>
+</head>
+
+<body>
+<canvas id="gl-canvas" width="512" height="512">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+</body>
+</html>
