@@ -21,9 +21,9 @@ var vertexColors = [
     vec4(0.0, 0.0, 0.0, 1.0),
     vec4(1.0, 0.0, 0.0, 1.0),
     vec4(1.0, 1.0, 0.0, 1.0),
-    vec4(0.0, 1.0, 0.0, 1.0), 
+    vec4(0.0, 1.0, 0.0, 1.0),
     vec4(0.0, 0.0, 1.0, 1.0),
-    vec4(1.0, 0.0, 1.0, 1.0), 
+    vec4(1.0, 0.0, 1.0, 1.0),
     vec4(0.0, 1.0, 1.0, 1.0),
     vec4(1.0, 1.0, 1.0, 1.0)
 ];
@@ -39,11 +39,12 @@ window.onload = function init() {
 
     gl.enable(gl.DEPTH_TEST);
 
-    colorCube();
+    colorCube(); // preenche pointsArray e colorsArray
 
     var program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
+    // posições
     var vBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(pointsArray), gl.STATIC_DRAW);
@@ -52,7 +53,7 @@ window.onload = function init() {
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
-
+    // cores
     var cBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(colorsArray), gl.STATIC_DRAW);
@@ -61,46 +62,37 @@ window.onload = function init() {
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vColor);
 
-
+    // uniforms
     modelViewMatrixLoc = gl.getUniformLocation(program, "modelViewMatrix");
     projectionMatrixLoc = gl.getUniformLocation(program, "projectionMatrix");
 
-
-    eye = vec3(0.0, 0.0, 3.0);
+    // câmera — ajuste para ver 3 faces
+    eye = vec3(1.5, 1.5, 1.5); // ← aqui: ponto fora do eixo para ver 3 faces
     at = vec3(0.0, 0.0, 0.0);
     up = vec3(0.0, 1.0, 0.0);
 
-
-    theta = [0, 0, 0];
-    axis = 0;
-
-    render();
+    render(); // desenha apenas uma vez (estático)
 }
 
 function quad(a, b, c, d) {
-
     var indices = [a, b, c, a, c, d];
     for (var i = 0; i < indices.length; ++i) {
         pointsArray.push(vertices[indices[i]]);
-
         colorsArray.push(vertexColors[indices[i]]);
     }
 }
 
 function colorCube() {
-
-    quad(1, 0, 3, 2);
-    quad(2, 3, 7, 6);
-    quad(3, 0, 4, 7);
-    quad(6, 5, 1, 2);
-    quad(4, 5, 6, 7);
-    quad(5, 4, 0, 1);
+    quad(1, 0, 3, 2); // frente
+    quad(2, 3, 7, 6); // direita
+    quad(3, 0, 4, 7); // baixo
+    quad(6, 5, 1, 2); // cima
+    quad(4, 5, 6, 7); // trás
+    quad(5, 4, 0, 1); // esquerda
 }
 
 var modelViewMatrixLoc;
 var projectionMatrixLoc;
-var theta;
-var axis;
 var eye, at, up;
 
 function render() {
@@ -109,19 +101,11 @@ function render() {
     var aspect = gl.canvas.width / gl.canvas.height;
     var projectionMatrix = perspective(45.0, aspect, 0.1, 10.0);
 
-    theta[0] += 0.6;
-    theta[1] += 0.4;
-    theta[2] += 0.2;
-
+    // sem rotações — apenas view da câmera
     var mv = lookAt(eye, at, up);
-    mv = mult(mv, rotate(theta[0], [1, 0, 0]));
-    mv = mult(mv, rotate(theta[1], [0, 1, 0]));
-    mv = mult(mv, rotate(theta[2], [0, 0, 1]));
 
     gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(mv));
     gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
 
     gl.drawArrays(gl.TRIANGLES, 0, NumVertices);
-
-    requestAnimFrame(render);
 }
